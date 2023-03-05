@@ -24,11 +24,11 @@ const main = async () => {
   app.use(express.json());
   app.use(session({
     store: new FileStore({}),
-    secret: process.env.SESSION_SECRET,
+    secret: process.env.SESSION_SECRET || 'secret',
     cookie: { secure: false }
   }));
 
-  app.use((req, res, next) => {
+  app.use((req: any, res: any, next: any) => {
     console.log(req.method, req.url);
     if (req.session.thread) {
       req.session.thread = createThreadFromJson(req.session.thread);
@@ -36,21 +36,21 @@ const main = async () => {
     next();
   });
 
-  app.get('/ping', (req, res) => {
+  app.get('/ping', (req: any, res: any) => {
     sendOk(res, { thread: req.session.thread })
   });
 
-  app.post('/thread', async (req, res) => {
+  app.post('/thread', async (req: any, res: any) => {
     // create the thread and add to the session
     req.session.thread = createThread();
     sendOk(res, { thread: req.session.thread })
   });
 
-  app.get('/thread', async (req, res) => {
+  app.get('/thread', async (req: any, res: any) => {
     sendOk(res, { thread: req.session.thread })
   });
 
-  app.post('/send', async (req, res) => {
+  app.post('/send', async (req: any, res: any) => {
     // add a message to the thread and send it to the api
     const message = req.body.message;
     const thread = await sendMessage(message);

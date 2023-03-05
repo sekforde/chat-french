@@ -6,8 +6,8 @@ export class Thread {
   messages: IMessage[] = [];
   aiTag: string = 'AI';
   humanTag: string = 'Human';
-  lastAiMessage: IMessage;
-  lastHumanMessage: IMessage;
+  lastAiMessage?: IMessage;
+  lastHumanMessage?: IMessage;
   constructor(base = '') {
     this.base = '';
     this.messages = [];

@@ -1,4 +1,4 @@
-import { Api } from './api';
+import { Api } from './Api';
 import { Thread } from './Thread';
 
 export const service = () => {

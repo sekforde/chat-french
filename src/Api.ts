@@ -14,7 +14,7 @@ export class Api {
     this.configuration = new Configuration({ apiKey: process.env.OPENAI_API_KEY });
     this.openai = new OpenAIApi(this.configuration);
   }
-  send(thread: Thread): Promise<any> {
+  send(thread: any): Promise<any> {
     return this.openai.createCompletion({
       model: "text-davinci-003",
       prompt: thread.prompt(),
