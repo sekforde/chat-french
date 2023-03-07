@@ -8,7 +8,7 @@ import { service } from './service';
 dotenv.config();
 
 const main = async () => {
-  // const FileStore = filestore(session);
+  const FileStore = filestore(session);
   const app = express()
   const port = process.env.PORT || 3000;
   const { createThread, createThreadFromJson, sendMessage } = service();
@@ -23,7 +23,7 @@ const main = async () => {
   app.use(cookieParser());
   app.use(express.json());
   app.use(session({
-    // store: new FileStore({}),
+    store: new FileStore({}),
     secret: process.env.SESSION_SECRET || 'secret',
     cookie: { secure: false }
   }));
