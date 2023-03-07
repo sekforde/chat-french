@@ -1,18 +1,29 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Thread = void 0;
+const personas_1 = require("./personas");
+const personaHash = personas_1.personas.reduce((hash, persona) => {
+    hash[persona.name] = persona;
+    return hash;
+}, {});
 class Thread {
-    constructor(base = '') {
+    constructor(persona) {
+        this.persona = '';
         this.createdAt = new Date();
         this.base = '';
         this.messages = [];
         this.aiTag = 'AI';
         this.humanTag = 'Human';
+        console.log('persona', persona);
+        this.persona = persona;
         this.base = '';
         this.messages = [];
         this.aiTag = 'AI';
         this.humanTag = 'Human';
-        this.base = base;
+        this.base = personaHash[persona].base;
+        personaHash[persona].ai.forEach((text) => {
+            this.addAi(text);
+        });
     }
     setBase(base) {
         this.base = base;
@@ -40,6 +51,7 @@ class Thread {
         return JSON.stringify(this);
     }
     fromJson(json) {
+        this.persona = json.persona;
         this.base = json.base;
         this.aiTag = json.aiTag;
         this.humanTag = json.humanTag;

@@ -9,6 +9,7 @@ const express_session_1 = __importDefault(require("express-session"));
 const session_file_store_1 = __importDefault(require("session-file-store"));
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const service_1 = require("./service");
+const personas_1 = require("./personas");
 dotenv_1.default.config();
 const main = async () => {
     const FileStore = (0, session_file_store_1.default)(express_session_1.default);
@@ -24,26 +25,37 @@ const main = async () => {
     app.use((0, cookie_parser_1.default)());
     app.use(express_1.default.json());
     app.use((0, express_session_1.default)({
-        store: new FileStore({}),
+        store: new FileStore({
+        // reapInterval: ,
+        }),
         secret: process.env.SESSION_SECRET || 'secret',
-        cookie: { secure: false }
+        resave: true,
+        saveUninitialized: true,
+        cookie: {
+            maxAge: (1000 * 60 * 100)
+        }
     }));
     app.use((req, res, next) => {
-        console.log(req.method, req.url);
+        console.log('logger', req.method, req.url);
         if (req.session.thread) {
             req.session.thread = createThreadFromJson(req.session.thread);
         }
         next();
     });
+    app.get('/personas', (req, res) => {
+        sendOk(res, personas_1.personas);
+    });
     app.get('/ping', (req, res) => {
         sendOk(res, { thread: req.session.thread });
     });
-    app.post('/thread', async (req, res) => {
+    app.post('/thread/:persona', async (req, res) => {
         // create the thread and add to the session
-        req.session.thread = createThread();
+        console.log('## POST /thread/:persona', req.params.persona);
+        req.session.thread = createThread(req.params.persona);
         sendOk(res, { thread: req.session.thread });
     });
     app.get('/thread', async (req, res) => {
+        console.log('## GET /thread');
         sendOk(res, { thread: req.session.thread });
     });
     app.post('/send', async (req, res) => {

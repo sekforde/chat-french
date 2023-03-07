@@ -6,14 +6,12 @@ const Thread_1 = require("./Thread");
 const service = () => {
     const api = new Api_1.Api();
     let thread;
-    function createThread() {
-        thread = new Thread_1.Thread();
-        thread.setBase(`I want to have a conversation with you, where you are a waiter in a french restaurant and you speak french`);
-        thread.addAi('Bonjour, Monsieur!');
+    function createThread(persona) {
+        thread = new Thread_1.Thread(persona);
         return thread;
     }
     function createThreadFromJson(json) {
-        thread = new Thread_1.Thread();
+        thread = new Thread_1.Thread(json.persona);
         thread.fromJson(json);
         return thread;
     }
