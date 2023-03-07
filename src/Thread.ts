@@ -1,6 +1,13 @@
 import { IMessage } from './index.d';
+import { personas } from './personas';
+
+const personaHash = personas.reduce((hash: any, persona: any) => {
+  hash[persona.name] = persona;
+  return hash;
+}, {});
 
 export class Thread {
+  persona: string = '';
   createdAt: Date = new Date();
   base: string = '';
   messages: IMessage[] = [];
@@ -8,12 +15,18 @@ export class Thread {
   humanTag: string = 'Human';
   lastAiMessage?: IMessage;
   lastHumanMessage?: IMessage;
-  constructor(base = '') {
+
+  constructor(persona: string) {
+    console.log('persona', persona);
+    this.persona = persona;
     this.base = '';
     this.messages = [];
     this.aiTag = 'AI';
     this.humanTag = 'Human';
-    this.base = base;
+    this.base = personaHash[persona].base;
+    personaHash[persona].ai.forEach((text: string) => {
+      this.addAi(text);
+    });
   }
   setBase(base: string) {
     this.base = base;
@@ -41,6 +54,7 @@ export class Thread {
     return JSON.stringify(this);
   }
   fromJson(json: any) {
+    this.persona = json.persona;
     this.base = json.base;
     this.aiTag = json.aiTag;
     this.humanTag = json.humanTag;

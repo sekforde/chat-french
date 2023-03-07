@@ -6,15 +6,13 @@ export const service = () => {
   const api = new Api();
   let thread: Thread;
 
-  function createThread() {
-    thread = new Thread();
-    thread.setBase(`I want to have a conversation with you, where you are a waiter in a french restaurant and you speak french`);
-    thread.addAi('Bonjour, Monsieur!');
+  function createThread(persona: string) {
+    thread = new Thread(persona);
     return thread;
   }
 
   function createThreadFromJson(json: any) {
-    thread = new Thread();
+    thread = new Thread(json.persona);
     thread.fromJson(json);
     return thread;
   }

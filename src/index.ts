@@ -4,6 +4,7 @@ import session from 'express-session';
 import filestore from 'session-file-store';
 import cookieParser from 'cookie-parser';
 import { service } from './service';
+import { personas } from './personas';
 
 dotenv.config();
 
@@ -35,24 +36,30 @@ const main = async () => {
   }));
 
   app.use((req: any, res: any, next: any) => {
-    console.log(req.method, req.url);
+    console.log('logger', req.method, req.url);
     if (req.session.thread) {
       req.session.thread = createThreadFromJson(req.session.thread);
     }
     next();
   });
 
+  app.get('/personas', (req: any, res: any) => {
+    sendOk(res, personas)
+  });
+
   app.get('/ping', (req: any, res: any) => {
     sendOk(res, { thread: req.session.thread })
   });
 
-  app.post('/thread', async (req: any, res: any) => {
+  app.post('/thread/:persona', async (req: any, res: any) => {
     // create the thread and add to the session
-    req.session.thread = createThread();
+    console.log('## POST /thread/:persona', req.params.persona);
+    req.session.thread = createThread(req.params.persona);
     sendOk(res, { thread: req.session.thread })
   });
 
   app.get('/thread', async (req: any, res: any) => {
+    console.log('## GET /thread');
     sendOk(res, { thread: req.session.thread })
   });
 
