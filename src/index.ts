@@ -23,9 +23,15 @@ const main = async () => {
   app.use(cookieParser());
   app.use(express.json());
   app.use(session({
-    store: new FileStore({}),
+    store: new FileStore({
+      // reapInterval: ,
+    }),
     secret: process.env.SESSION_SECRET || 'secret',
-    cookie: { secure: false }
+    resave: true,
+    saveUninitialized: true,
+    cookie: {
+      maxAge: (1000 * 60 * 100)
+    }
   }));
 
   app.use((req: any, res: any, next: any) => {
