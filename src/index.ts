@@ -44,7 +44,7 @@ const main = async () => {
   });
 
   app.get('/personas', (req: any, res: any) => {
-    sendOk(res, personas)
+    sendOk(res, { data: personas })
   });
 
   app.get('/ping', (req: any, res: any) => {
