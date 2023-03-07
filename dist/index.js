@@ -43,7 +43,7 @@ const main = async () => {
         next();
     });
     app.get('/personas', (req, res) => {
-        sendOk(res, personas_1.personas);
+        sendOk(res, { data: personas_1.personas });
     });
     app.get('/ping', (req, res) => {
         sendOk(res, { thread: req.session.thread });
