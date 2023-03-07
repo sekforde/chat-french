@@ -8,7 +8,7 @@ export const personas = [
   },
   {
     name: 'Buddy',
-    base: `I want to have a conversation with you, where you are my friend and we are messaging each other. Keep it simple and don't give me translations`,
+    base: `I would like you to pretend to be my french friend and we are texting each other in french`,
     ai: [
       'Bonjour! ca va?',
     ]
