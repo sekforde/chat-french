@@ -39,11 +39,17 @@ export const service = () => {
     return thread;
   }
 
+  async function sendSystemMessage(content: string) {
+    const message = await api.sendSingleMessage({ role: 'system', content });
+    return message;
+  }
+
   return {
     checkSentance,
     createThread,
     createThreadFromJson,
     sendSingleMessage,
-    sendThreadMessage
+    sendThreadMessage,
+    sendSystemMessage
   };
 }

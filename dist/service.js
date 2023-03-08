@@ -34,12 +34,17 @@ const service = () => {
         thread.add(message.role, message.content);
         return thread;
     }
+    async function sendSystemMessage(content) {
+        const message = await api.sendSingleMessage({ role: 'system', content });
+        return message;
+    }
     return {
         checkSentance,
         createThread,
         createThreadFromJson,
         sendSingleMessage,
-        sendThreadMessage
+        sendThreadMessage,
+        sendSystemMessage
     };
 };
 exports.service = service;

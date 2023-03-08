@@ -17,7 +17,8 @@ const main = async () => {
     createThread,
     createThreadFromJson,
     sendSingleMessage,
-    sendThreadMessage
+    sendThreadMessage,
+    sendSystemMessage
   } = service();
 
   function sendOk(res: any, data: any) {
@@ -64,17 +65,6 @@ const main = async () => {
     sendOk(res, { analysis })
   });
 
-  // app.post('/chat', async (req: any, res: any) => {
-  //   try {
-  //     const { message } = req.body;
-  //     const analysis = await sendThreadMessage(message);
-  //     sendOk(res, { analysis })
-
-  //   } catch (ex) {
-  //     sendOk(res, { error: ex })
-  //   }
-  // });
-
   app.post('/thread/:persona', async (req: any, res: any) => {
     // create the thread and add to the session
     console.log('### POST /thread/:persona', req.params.persona);
@@ -88,13 +78,16 @@ const main = async () => {
   });
 
   app.post('/send', async (req: any, res: any) => {
-    // add a message to the thread and send it to the api
     const message = req.body.message;
     const thread = await sendThreadMessage(message);
-    // console.log(thread);
     req.session.thread = thread;
-    // sendOk(res, { message: req.session.thread.lastAssistantMessage })
     sendOk(res, { message: thread.messages[thread.messages.length - 1] })
+  });
+
+  app.post('/system', async (req: any, res: any) => {
+    const question = req.body.message;
+    const answer = await sendSystemMessage(question);
+    sendOk(res, { message: answer })
   });
 
   app.listen(port, () => {
