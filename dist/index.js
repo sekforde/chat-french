@@ -15,7 +15,7 @@ const main = async () => {
     const FileStore = (0, session_file_store_1.default)(express_session_1.default);
     const app = (0, express_1.default)();
     const port = process.env.PORT || 3000;
-    const { createThread, createThreadFromJson, sendMessage } = (0, service_1.service)();
+    const { checkSentance, createThread, createThreadFromJson, sendSingleMessage, sendThreadMessage } = (0, service_1.service)();
     function sendOk(res, data) {
         res.send({
             status: 'ok',
@@ -48,9 +48,24 @@ const main = async () => {
     app.get('/ping', (req, res) => {
         sendOk(res, { thread: req.session.thread });
     });
+    app.post('/check', async (req, res) => {
+        const { message } = req.body;
+        console.log(message);
+        const analysis = await checkSentance(message);
+        sendOk(res, { analysis });
+    });
+    // app.post('/chat', async (req: any, res: any) => {
+    //   try {
+    //     const { message } = req.body;
+    //     const analysis = await sendThreadMessage(message);
+    //     sendOk(res, { analysis })
+    //   } catch (ex) {
+    //     sendOk(res, { error: ex })
+    //   }
+    // });
     app.post('/thread/:persona', async (req, res) => {
         // create the thread and add to the session
-        console.log('## POST /thread/:persona', req.params.persona);
+        console.log('### POST /thread/:persona', req.params.persona);
         req.session.thread = createThread(req.params.persona);
         sendOk(res, { thread: req.session.thread });
     });
@@ -61,9 +76,11 @@ const main = async () => {
     app.post('/send', async (req, res) => {
         // add a message to the thread and send it to the api
         const message = req.body.message;
-        const thread = await sendMessage(message);
+        const thread = await sendThreadMessage(message);
+        // console.log(thread);
         req.session.thread = thread;
-        sendOk(res, { message: req.session.thread.lastAiMessage });
+        // sendOk(res, { message: req.session.thread.lastAssistantMessage })
+        sendOk(res, { message: thread.messages[thread.messages.length - 1] });
     });
     app.listen(port, () => {
         console.log(`Example app listening on port ${port}`);

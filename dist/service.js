@@ -8,6 +8,7 @@ const service = () => {
     let thread;
     function createThread(persona) {
         thread = new Thread_1.Thread(persona);
+        thread.loadPersona();
         return thread;
     }
     function createThreadFromJson(json) {
@@ -15,20 +16,30 @@ const service = () => {
         thread.fromJson(json);
         return thread;
     }
-    async function send() {
-        const response = await api.send(thread);
-        return response.data.choices[0].text;
+    async function checkSentance(sentance) {
+        const message = await api.sendSingleMessage({
+            role: 'assistant',
+            content: `is "${sentance}" a good french sentance with correct spelling and grammar?`
+        });
+        return message;
     }
-    async function sendMessage(text) {
-        thread.addHuman(text);
-        const aiText = await send();
-        thread.addAi(aiText);
+    async function sendSingleMessage(content, role = 'user') {
+        const message = await api.sendSingleMessage({ role, content });
+        thread.add(message.content, message.role);
+        return thread;
+    }
+    async function sendThreadMessage(text) {
+        thread.addUser(text);
+        const message = await api.sendMessages(thread.chatMessages());
+        thread.add(message.role, message.content);
         return thread;
     }
     return {
+        checkSentance,
         createThread,
         createThreadFromJson,
-        sendMessage
+        sendSingleMessage,
+        sendThreadMessage
     };
 };
 exports.service = service;

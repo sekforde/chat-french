@@ -7,60 +7,61 @@ const personaHash = personas_1.personas.reduce((hash, persona) => {
     return hash;
 }, {});
 class Thread {
-    constructor(persona) {
-        this.persona = '';
+    constructor(personaName) {
+        this.personaName = '';
         this.createdAt = new Date();
-        this.base = '';
         this.messages = [];
-        this.aiTag = 'AI';
-        this.humanTag = 'Human';
-        console.log('persona', persona);
-        this.persona = persona;
-        this.base = '';
+        this.systemTag = 'system';
+        this.userTag = 'user';
+        this.assistantTag = 'assistant';
+        console.log(personaName);
+        this.personaName = personaName;
         this.messages = [];
-        this.aiTag = 'AI';
-        this.humanTag = 'Human';
-        this.base = personaHash[persona].base;
-        personaHash[persona].ai.forEach((text) => {
-            this.addAi(text);
+    }
+    loadPersona() {
+        personaHash[this.personaName].messages.forEach((message) => {
+            this.add(message.role, message.content);
         });
     }
-    setBase(base) {
-        this.base = base;
-    }
-    add(user, text) {
+    add(role, content) {
         this.messages.push({
             date: new Date(),
             sequence: this.messages.length,
-            user,
-            text
+            role,
+            content
         });
         return this.messages[this.messages.length - 1];
     }
-    addAi(text) {
-        this.lastAiMessage = this.add(this.aiTag, text);
+    addSystem(content) {
+        this.lastSystemMessage = this.add(this.systemTag, content);
     }
-    addHuman(text) {
-        this.lastHumanMessage = this.add(this.humanTag, text);
+    addUser(content) {
+        this.lastUserMessage = this.add(this.userTag, content);
     }
-    prompt() {
-        const messages = this.messages.map((message) => `${message.user}: ${message.text}`);
-        return `${this.base}\n\n${messages.join('\n')}\n${this.aiTag}: \n\n`;
+    addAssistant(content) {
+        this.lastAssistantMessage = this.add(this.assistantTag, content);
+    }
+    chatMessages() {
+        return this.messages.map((message) => {
+            return {
+                role: message.role,
+                content: message.content
+            };
+        });
     }
     toString() {
         return JSON.stringify(this);
     }
     fromJson(json) {
-        this.persona = json.persona;
-        this.base = json.base;
-        this.aiTag = json.aiTag;
-        this.humanTag = json.humanTag;
+        this.personaName = json.personaName;
+        this.systemTag = json.systemTag;
+        this.userTag = json.userTag;
         this.messages = json.messages.map((message) => {
             return {
-                date: new Date(message.date),
+                date: new Date(message?.date),
                 sequence: message.sequence,
-                user: message.user,
-                text: message.text
+                role: message.role,
+                content: message.content
             };
         });
         return this;
