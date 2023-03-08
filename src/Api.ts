@@ -29,7 +29,9 @@ export class Api {
         max_tokens: this.max_tokens,
         messages
       };
+      console.log(payload);
       const response = await axios.post(this.url, payload, this.config);
+      console.log(JSON.stringify(response.data, null, 2));
       if (response.data.choices.length === 0) {
         return {
           role: "assistant",

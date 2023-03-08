@@ -72,7 +72,9 @@ const main = async () => {
     });
     app.post('/system', async (req, res) => {
         const question = req.body.message;
+        console.log('question:', question);
         const answer = await sendSystemMessage(question);
+        console.log('answer:', answer);
         sendOk(res, { message: answer });
     });
     app.listen(port, () => {
