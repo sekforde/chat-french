@@ -1,6 +1,17 @@
-export interface IMessage {
+export interface IGPTMessage {
+  role: string;
+  content: string;
+}
+
+export interface IThreadMessage {
   date: Date;
   sequence: number;
-  user: string;
-  text: string;
+  role: string;
+  content: string;
 }
+
+export interface IPersona {
+  name: string;
+  messages: IThreadMessage[];
+}
+

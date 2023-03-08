@@ -1,69 +1,71 @@
-import { IMessage } from './index.d';
+import { IPersona, IGPTMessage, IThreadMessage } from './index.d';
 import { personas } from './personas';
 
-const personaHash = personas.reduce((hash: any, persona: any) => {
+const personaHash = personas.reduce((hash: any, persona: IPersona) => {
   hash[persona.name] = persona;
   return hash;
 }, {});
 
 export class Thread {
-  persona: string = '';
+  personaName: string = '';
   createdAt: Date = new Date();
-  base: string = '';
-  messages: IMessage[] = [];
-  aiTag: string = 'AI';
-  humanTag: string = 'Human';
-  lastAiMessage?: IMessage;
-  lastHumanMessage?: IMessage;
+  messages: IThreadMessage[] = [];
+  systemTag: string = 'system';
+  userTag: string = 'user';
+  assistantTag: string = 'assistant';
+  lastSystemMessage?: IThreadMessage;
+  lastUserMessage?: IThreadMessage;
+  lastAssistantMessage?: IThreadMessage;
 
-  constructor(persona: string) {
-    console.log('persona', persona);
-    this.persona = persona;
-    this.base = '';
+  constructor(personaName: string) {
+    console.log(personaName);
+    this.personaName = personaName;
     this.messages = [];
-    this.aiTag = 'AI';
-    this.humanTag = 'Human';
-    this.base = personaHash[persona].base;
-    personaHash[persona].ai.forEach((text: string) => {
-      this.addAi(text);
+  }
+  loadPersona() {
+    personaHash[this.personaName].messages.forEach((message: IGPTMessage) => {
+      this.add(message.role, message.content);
     });
   }
-  setBase(base: string) {
-    this.base = base;
-  }
-  add(user: string, text: string) {
+  add(role: string, content: string) {
     this.messages.push({
       date: new Date(),
       sequence: this.messages.length,
-      user,
-      text
+      role,
+      content
     });
     return this.messages[this.messages.length - 1];
   }
-  addAi(text: string) {
-    this.lastAiMessage = this.add(this.aiTag, text);
+  addSystem(content: string) {
+    this.lastSystemMessage = this.add(this.systemTag, content);
   }
-  addHuman(text: string) {
-    this.lastHumanMessage = this.add(this.humanTag, text);
+  addUser(content: string) {
+    this.lastUserMessage = this.add(this.userTag, content);
   }
-  prompt() {
-    const messages = this.messages.map((message) => `${message.user}: ${message.text}`);
-    return `${this.base}\n\n${messages.join('\n')}\n${this.aiTag}: \n\n`;
+  addAssistant(content: string) {
+    this.lastAssistantMessage = this.add(this.assistantTag, content);
+  }
+  chatMessages(): IGPTMessage[] {
+    return this.messages.map((message: IThreadMessage) => {
+      return {
+        role: message.role,
+        content: message.content
+      }
+    });
   }
   toString() {
     return JSON.stringify(this);
   }
   fromJson(json: any) {
-    this.persona = json.persona;
-    this.base = json.base;
-    this.aiTag = json.aiTag;
-    this.humanTag = json.humanTag;
-    this.messages = json.messages.map((message: any) => {
+    this.personaName = json.personaName;
+    this.systemTag = json.systemTag;
+    this.userTag = json.userTag;
+    this.messages = json.messages.map((message: IThreadMessage) => {
       return {
-        date: new Date(message.date),
+        date: new Date(message?.date),
         sequence: message.sequence,
-        user: message.user,
-        text: message.text
+        role: message.role,
+        content: message.content
       };
     });
     return this;

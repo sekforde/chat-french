@@ -12,7 +12,13 @@ const main = async () => {
   const FileStore = filestore(session);
   const app = express()
   const port = process.env.PORT || 3000;
-  const { createThread, createThreadFromJson, sendMessage } = service();
+  const {
+    checkSentance,
+    createThread,
+    createThreadFromJson,
+    sendSingleMessage,
+    sendThreadMessage
+  } = service();
 
   function sendOk(res: any, data: any) {
     res.send({
@@ -51,9 +57,27 @@ const main = async () => {
     sendOk(res, { thread: req.session.thread })
   });
 
+  app.post('/check', async (req: any, res: any) => {
+    const { message } = req.body;
+    console.log(message);
+    const analysis = await checkSentance(message);
+    sendOk(res, { analysis })
+  });
+
+  // app.post('/chat', async (req: any, res: any) => {
+  //   try {
+  //     const { message } = req.body;
+  //     const analysis = await sendThreadMessage(message);
+  //     sendOk(res, { analysis })
+
+  //   } catch (ex) {
+  //     sendOk(res, { error: ex })
+  //   }
+  // });
+
   app.post('/thread/:persona', async (req: any, res: any) => {
     // create the thread and add to the session
-    console.log('## POST /thread/:persona', req.params.persona);
+    console.log('### POST /thread/:persona', req.params.persona);
     req.session.thread = createThread(req.params.persona);
     sendOk(res, { thread: req.session.thread })
   });
@@ -66,9 +90,11 @@ const main = async () => {
   app.post('/send', async (req: any, res: any) => {
     // add a message to the thread and send it to the api
     const message = req.body.message;
-    const thread = await sendMessage(message);
+    const thread = await sendThreadMessage(message);
+    // console.log(thread);
     req.session.thread = thread;
-    sendOk(res, { message: req.session.thread.lastAiMessage })
+    // sendOk(res, { message: req.session.thread.lastAssistantMessage })
+    sendOk(res, { message: thread.messages[thread.messages.length - 1] })
   });
 
   app.listen(port, () => {
