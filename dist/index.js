@@ -15,7 +15,7 @@ const main = async () => {
     const FileStore = (0, session_file_store_1.default)(express_session_1.default);
     const app = (0, express_1.default)();
     const port = process.env.PORT || 3000;
-    const { checkSentance, createThread, createThreadFromJson, sendSingleMessage, sendThreadMessage, sendSystemMessage } = (0, service_1.service)();
+    const { checkSentance, createThread, createThreadFromJson, sendSingleMessage, sendThreadMessage, sendSystemMessage, getTranscription } = (0, service_1.service)();
     function sendOk(res, data) {
         res.send({
             status: 'ok',
@@ -23,7 +23,7 @@ const main = async () => {
         });
     }
     app.use((0, cookie_parser_1.default)());
-    app.use(express_1.default.json());
+    app.use(express_1.default.json({ limit: '25mb' }));
     app.use((0, express_session_1.default)({
         store: new FileStore({
         // reapInterval: ,
@@ -77,8 +77,15 @@ const main = async () => {
         console.log('answer:', answer);
         sendOk(res, { message: answer });
     });
+    app.post('/transcribe', async (req, res) => {
+        const file = req.body.file;
+        console.log('file length:', file.length);
+        const { text } = await getTranscription(file);
+        console.log('text:', text);
+        sendOk(res, { text });
+    });
     app.listen(port, () => {
         console.log(`Example app listening on port ${port}`);
     });
 };
-main().catch(console.error);
+main(); //.catch(console.error);

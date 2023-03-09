@@ -38,13 +38,18 @@ const service = () => {
         const message = await api.sendSingleMessage({ role: 'system', content });
         return message;
     }
+    async function getTranscription(file) {
+        const text = await api.sendWhisper(file);
+        return text;
+    }
     return {
         checkSentance,
         createThread,
         createThreadFromJson,
         sendSingleMessage,
         sendThreadMessage,
-        sendSystemMessage
+        sendSystemMessage,
+        getTranscription
     };
 };
 exports.service = service;
