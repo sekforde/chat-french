@@ -18,7 +18,8 @@ const main = async () => {
     createThreadFromJson,
     sendSingleMessage,
     sendThreadMessage,
-    sendSystemMessage
+    sendSystemMessage,
+    getTranscription
   } = service();
 
   function sendOk(res: any, data: any) {
@@ -29,7 +30,7 @@ const main = async () => {
   }
 
   app.use(cookieParser());
-  app.use(express.json());
+  app.use(express.json({ limit: '25mb' }));
   app.use(session({
     store: new FileStore({
       // reapInterval: ,
@@ -92,10 +93,18 @@ const main = async () => {
     sendOk(res, { message: answer })
   });
 
+  app.post('/transcribe', async (req: any, res: any) => {
+    const file = req.body.file;
+    console.log('file length:', file.length);
+    const { text } = await getTranscription(file);
+    console.log('text:', text);
+    sendOk(res, { text })
+  });
+
   app.listen(port, () => {
     console.log(`Example app listening on port ${port}`)
   });
 
 }
 
-main().catch(console.error);
+main(); //.catch(console.error);

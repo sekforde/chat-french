@@ -44,12 +44,18 @@ export const service = () => {
     return message;
   }
 
+  async function getTranscription(file: string) {
+    const text = await api.sendWhisper(file);
+    return text;
+  }
+
   return {
     checkSentance,
     createThread,
     createThreadFromJson,
     sendSingleMessage,
     sendThreadMessage,
-    sendSystemMessage
+    sendSystemMessage,
+    getTranscription
   };
 }
