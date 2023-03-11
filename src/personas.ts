@@ -53,4 +53,21 @@ export const personas: IPersona[] = [
       }
     ]
   },
+  {
+    name: 'My Lawyer',
+    messages: [
+      {
+        date: new Date(),
+        sequence: 0,
+        role: 'system',
+        content: `I want to have a conversation with you, where you are my american lawyer and we are discussing a case.`,
+      },
+      {
+        date: new Date(),
+        sequence: 0,
+        role: 'assistant',
+        content: 'Hello',
+      }
+    ]
+  },
 ]
