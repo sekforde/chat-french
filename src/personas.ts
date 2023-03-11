@@ -35,5 +35,22 @@ export const personas: IPersona[] = [
         content: 'Bonjour! ca va?',
       }
     ]
-  }
+  },
+  {
+    name: 'Dutch Teacher',
+    messages: [
+      {
+        date: new Date(),
+        sequence: 0,
+        role: 'system',
+        content: `I want to have a conversation with you, where you are a teacher at a school and we are in a parent teacher conference regarding my child. Keep it simple and don't give me translations`,
+      },
+      {
+        date: new Date(),
+        sequence: 0,
+        role: 'assistant',
+        content: 'Hallo! Hoe gaat het met uw kind?',
+      }
+    ]
+  },
 ]
